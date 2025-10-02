@@ -1,0 +1,81 @@
+#!/bin/bash
+
+# Set to TRUE to turn on debug-level output, empty or anything else to suppress
+DEBUG=TRUE
+
+# Set to TRUE to show all directories with the executable, empty or anything else to suppress
+SHOW_ALL_MATCHES=TRUE
+
+function debug() {
+	if [ "$DEBUG" -a "$DEBUG" = "TRUE" ]
+	then
+		echo "$0: DEBUG: $@" >&2
+	fi
+}
+
+function info() {
+	echo "$0: INFO: $@" >&2
+}
+
+function usage() {
+	info "Usage: $0 <COMMAND> [<OPTION> ...] [<ARGUMENT> ...]"
+}
+
+COMMAND=$1
+if [ ! "$1" ]
+then
+	usage
+	exit 1
+fi
+debug "Command is \"${COMMAND}\", with $(( $# - 1 )) options and arguments"
+
+PATHS=$(echo "${PATH}"|sed 's/:/ /g')
+debug "Split PATH: ${PATHS}" 
+debug "Found $(( $(echo ${PATHS} | wc -w) )) directories in PATH"
+
+# store original directory so we can go back to it
+ORIG_DIR="${PWD}"
+
+# Iterate over the directories and see if we find COMMAND
+for p in $PATHS 
+do 
+	if [ ! -d "${p}" -o ! -r "${p}" ]
+	then
+		debug "Directory does not exist or is unreadable ${p}..."
+		continue
+	fi
+	info "Looking in directory ${p}"
+	cd "${p}"
+	ls | grep "^${COMMAND}$" > /dev/null 2>&1
+	FOUND=$?
+	# see if the command is found and executable by user
+	if [ "$FOUND" -eq 0 -a -x "${p}/${COMMAND}" ]
+	then
+		info "Found a match! $(ls -l ${p}/${COMMAND})"
+		if [ -z "$CMD_DIR" ]
+		then
+			# Only save the first directory we find the file in
+			CMD_DIR="$p"
+		fi
+		# exit the loop if we don't need to see all the matches
+		if [ ! "$SHOW_ALL_MATCHES" -o "$SHOW_ALL_MATCHES" == "FALSE" ]
+		then
+			break
+		fi
+	fi
+done
+
+if [ ! "$CMD_DIR" ]
+then
+	info "$0: command not found: $COMMAND"
+	exit 2
+fi
+
+cd "${ORIG_DIR}"
+shift
+OPTS_ARGS=$@
+info "Running command ${CMD_DIR}/${COMMAND}"
+info "==============================="
+cd ${PWD}
+# Run the command, exec replaces the shell script without creating a new process
+exec $CMD_DIR/$COMMAND $@

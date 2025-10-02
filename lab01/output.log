@@ -1,0 +1,16 @@
+ls: cannot open directory '/etc/audit': Permission denied
+ls: cannot open directory '/etc/cups/ssl': Permission denied
+ls: cannot open directory '/etc/firewalld': Permission denied
+ls: cannot open directory '/etc/grub.d': Permission denied
+ls: cannot open directory '/etc/lvm/archive': Permission denied
+ls: cannot open directory '/etc/lvm/backup': Permission denied
+ls: cannot open directory '/etc/lvm/cache': Permission denied
+ls: cannot open directory '/etc/lvm/devices': Permission denied
+ls: cannot open directory '/etc/nftables': Permission denied
+ls: cannot open directory '/etc/pki/rsyslog': Permission denied
+ls: cannot open directory '/etc/polkit-1/localauthority': Permission denied
+ls: cannot open directory '/etc/polkit-1/rules.d': Permission denied
+ls: cannot open directory '/etc/sos/cleaner': Permission denied
+ls: cannot open directory '/etc/ssh/sshd_config.d': Permission denied
+ls: cannot open directory '/etc/sssd': Permission denied
+ls: cannot open directory '/etc/sudoers.d': Permission denied
